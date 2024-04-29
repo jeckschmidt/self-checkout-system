@@ -41,7 +41,10 @@ public class State3Controller implements Initializable{
 
 	Stage stage;
 
-	
+	public void switchToState5(ActionEvent e) throws IOException{
+		global.switchToState5(e);
+		
+	}
 	
 	
 	public void addFromButton(ActionEvent e) throws Exception {
