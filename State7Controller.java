@@ -66,7 +66,6 @@ public class State7Controller implements Initializable{
 		// start the animation timer so the date will be dynamically updated every second
 		timer.start();
 		
-		wait(3000);
 		
 		
 	}
@@ -79,4 +78,7 @@ public class State7Controller implements Initializable{
 	        dateTime.setText(LocalDateTime.now().format(DateTimeFormatter.ofPattern("MMM-dd-yyyy HH:mm:ss")));
 	    }
 	};
+	
+	
+	
 }
