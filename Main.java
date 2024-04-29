@@ -19,6 +19,7 @@ import javafx.scene.shape.Circle;
 
 
 public class Main extends Application{
+	
 	@Override
 	public void start(Stage stage) {
 		try {
@@ -49,6 +50,7 @@ public class Main extends Application{
 			stage.show();
 			
 			
+			
 			// when closing out this program..... logout prompt is showed
 			stage.setOnCloseRequest(event -> 
 			{
@@ -56,11 +58,16 @@ public class Main extends Application{
 				logout(stage);  // logout prompt via method down below
 			});
 			
+			Database.setCurrSubtotal("0");
+			Database.setCurrTax("0");
+			Database.setCurrTotal("0");
 			
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
+	
+	
 	
 	public void logout(Stage stage){
 		Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -69,12 +76,11 @@ public class Main extends Application{
 		alert.setContentText("Are you sure you want to leave?");
 		
 		if (alert.showAndWait().get() == ButtonType.OK) {
-			System.out.println("logged out");
 			stage.close();
 		}
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		launch(args);
 	}
 }
