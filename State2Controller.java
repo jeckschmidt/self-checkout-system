@@ -1,9 +1,11 @@
-
 package application;
 
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -16,6 +18,7 @@ import javafx.animation.Animation;
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -45,15 +48,29 @@ public class State2Controller implements Initializable{
 	private TextField searchbox;
 	@FXML
 	private Text subtotalLabel;
+	@FXML
+	private Text taxLabel;
+	@FXML
+	private Text totalLabel;
+	
+	private static final DecimalFormat decfor  = new DecimalFormat("0.00");
+	
+	public static Double round(Double number) {
+		double newNum = number.doubleValue();
+		
+		/*double scaledValue = newNum * 100;
+		int roundedInt = (int) Math.round(scaledValue);
+		double finalNum = (double) roundedInt / 100;
+		*/
+		
+		double finalNum = Double.parseDouble(decfor.format(newNum));
+		Double finalNumDouble = finalNum;
+		return finalNumDouble;
+	}
 	
 	
 	public void switchToState1(ActionEvent e) throws IOException{
 		global.switchToState1(e);
-		
-	}
-	
-	public void switchToState5(ActionEvent e) throws IOException{
-		global.switchToState5(e);
 		
 	}
 	
@@ -62,10 +79,15 @@ public class State2Controller implements Initializable{
 		
 	}
 	
+	public void switchToState5(ActionEvent e) throws IOException{
+		global.switchToState5(e);
+		
+	}
 	public void switchToState7(ActionEvent e) throws IOException{
 		global.switchToState7(e);
 		
 	}
+	
 	
 	public void addFromSearch(ActionEvent e) throws Exception {
 		String ID = searchbox.getText();  // retrieving the text from the textbox
@@ -83,7 +105,28 @@ public class State2Controller implements Initializable{
 				String nameOfGrocery =  (String) (database.get(key)[0]);
 				Database.updateCurrentlyInCart(nameOfGrocery);
 				ListView.setItems(currentlyInCart);
-				System.out.println("item found");			}
+				
+				
+				// update the subtotal label
+				String tempCostOfGrocery =  (String) database.get(key)[1];
+				Double costOfGrocery = Double.parseDouble(tempCostOfGrocery);
+				Double roundedCost = round(costOfGrocery);
+				Database.addToCurrSubtotal(roundedCost);
+				
+				
+				// update the taxLabel
+				Double taxRate = Database.getTaxRate();
+				Double itemTax = (taxRate * costOfGrocery);
+				Double roundedTax = round(itemTax);
+				Database.addToCurrTax(roundedTax);
+				
+				
+				// update the totalLabel
+				Double itemTotal = itemTax + costOfGrocery;
+				Double roundedTotal = round(itemTotal);
+				Database.addToCurrTotal(roundedTotal);
+				
+			}
 	    }
 	}
 	
@@ -92,8 +135,15 @@ public class State2Controller implements Initializable{
 		// start the animation timer so the date will be dynamically updated every second
 		timer.start();
 		
-		ObservableList<String> currentlyInCart = Database.getCurrentlyInCart();
-		ListView.setItems(currentlyInCart);
+		// set ListView to currentlyInCart items
+		ListView.setItems(Database.getCurrentlyInCart());
+		
+		
+		// set labels
+		subtotalLabel.textProperty().bind(Database.getCurrSubtotal());
+		taxLabel.textProperty().bind(Database.getCurrTax());
+		totalLabel.textProperty().bind(Database.getCurrTotal());
+		
 		
 		
 	    // detects which item in the ListView is being selected
@@ -119,3 +169,4 @@ public class State2Controller implements Initializable{
 		    }
 		};
 }
+
